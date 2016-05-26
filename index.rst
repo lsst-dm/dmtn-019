@@ -39,4 +39,45 @@
 
 :tocdepth: 1
 
-Write the docs; right here.
+In order to test Differential Chromatic Refraction (DCR) correction algorithms we first need a metric that quantifies the severity of residual dipoles in difference images, in order to evaluate the performance of the correction. 
+I used the StarFast simulator (http://dmtn-012.lsst.io, https://github.com/lsst-dm/starfast_simulator) to generate multiple realizations of a small field at u, g, and r bands and across a range of airmasses from 1.0 to 2.0.
+I then used ingestSimImages.py and processEimage.py from obs_lsstSim to generate standard calibrated exposures, and ran standard LSST image differencing using imageDifference.py with a calibrated exposure near zenith used as the template (using GetCalexpAsTemplateTask).
+
+.. figure:: /_static/Dipoles_ds9_fourpanel_f012.png
+   :name: fig-dipole_fourpanel
+   :target: https://github.com/lsst-dm/dmtn-019/tree/master/_static/Dipoles_ds9_fourpanel_f012.png
+
+
+   A small region from the simulated images at airmass 1.3 differenced from a template at airmass 1.00. Left to right, top to bottom: u-band, g-band, r-band, and the g-band template image for reference.
+
+.. figure:: /_static/ref_ugr_image.png
+   :name: fig-ugr_image
+   :target: https://github.com/lsst-dm/dmtn-019/tree/master/_static/ref_ugr_image.png
+
+   False color image of the template images, with u-band = blue, g-band = green, and r-band = red
+
+
+.. figure:: /_static/Masked_diaSrc_f0.png
+   :name: fig-u_diffim_masked
+   :target: https://github.com/lsst-dm/dmtn-019/tree/master/_static/Masked_diaSrc_f0.png
+
+   Full u-band difference image with positive and negative source detections masked in dark/light blue, saturated sources masked in green, and the edges masked in yellow.
+
+.. figure:: /_static/Masked_diaSrc_f1.png
+   :name: fig-g_diffim_masked
+   :target: https://github.com/lsst-dm/dmtn-019/tree/master/_static/Masked_diaSrc_f1.png
+
+   Full g-band difference image with positive and negative source detections masked in dark/light blue, saturated sources masked in green, and the edges masked in yellow.
+
+.. figure:: /_static/Masked_diaSrc_f2.png
+   :name: fig-r_diffim_masked
+   :target: https://github.com/lsst-dm/dmtn-019/tree/master/_static/Masked_diaSrc_f2.png
+
+   Full r-band difference image with positive and negative source detections masked in dark/light blue, saturated sources masked in green, and the edges masked in yellow.
+
+
+.. figure:: /_static/Dipole_severity_metric_plot.png
+   :name: fig-dipole_severity
+   :target: https://github.com/lsst-dm/dmtn-019/tree/master/_static/Dipole_severity_metric_plot.png
+
+  

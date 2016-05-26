@@ -109,8 +109,27 @@
 I used the StarFast simulator (<a class="reference external" href="http://dmtn-012.lsst.io">http://dmtn-012.lsst.io</a>, <a class="reference external" href="https://github.com/lsst-dm/starfast_simulator">https://github.com/lsst-dm/starfast_simulator</a>) to generate multiple realizations of a small field at u, g, and r bands and across a range of airmasses from 1.0 to 2.0.
 I then used ingestSimImages.py and processEimage.py from obs_lsstSim to generate standard calibrated exposures, and ran standard LSST image differencing using imageDifference.py with a calibrated exposure near zenith used as the template (using GetCalexpAsTemplateTask).</p>
 <div class="figure" id="fig-dipole-fourpanel">
-<a class="reference external image-reference" href="http://target.link/url"><img alt="_images/Dipoles_ds9_fourpanel_f012.png" src="_images/Dipoles_ds9_fourpanel_f012.png" /></a>
-<p class="caption"><span class="caption-number">Figure 1 </span><span class="caption-text">Caption text.</span></p>
+<a class="reference external image-reference" href="https://github.com/lsst-dm/dmtn-019/tree/master/_static/Dipoles_ds9_fourpanel_f012.png"><img alt="_images/Dipoles_ds9_fourpanel_f012.png" src="_images/Dipoles_ds9_fourpanel_f012.png" /></a>
+<p class="caption"><span class="caption-number">Figure 1 </span><span class="caption-text">A small region from the simulated images at airmass 1.3 differenced from a template at airmass 1.00. Left to right, top to bottom: u-band, g-band, r-band, and the g-band template image for reference.</span></p>
+</div>
+<div class="figure" id="fig-ugr-image">
+<a class="reference external image-reference" href="https://github.com/lsst-dm/dmtn-019/tree/master/_static/ref_ugr_image.png"><img alt="_images/ref_ugr_image.png" src="_images/ref_ugr_image.png" /></a>
+<p class="caption"><span class="caption-number">Figure 2 </span><span class="caption-text">False color image of the template images, with u-band = blue, g-band = green, and r-band = red</span></p>
+</div>
+<div class="figure" id="fig-u-diffim-masked">
+<a class="reference external image-reference" href="https://github.com/lsst-dm/dmtn-019/tree/master/_static/Masked_diaSrc_f0.png"><img alt="_images/Masked_diaSrc_f0.png" src="_images/Masked_diaSrc_f0.png" /></a>
+<p class="caption"><span class="caption-number">Figure 3 </span><span class="caption-text">Full u-band difference image with positive and negative source detections masked in dark/light blue, saturated sources masked in green, and the edges masked in yellow.</span></p>
+</div>
+<div class="figure" id="fig-g-diffim-masked">
+<a class="reference external image-reference" href="https://github.com/lsst-dm/dmtn-019/tree/master/_static/Masked_diaSrc_f1.png"><img alt="_images/Masked_diaSrc_f1.png" src="_images/Masked_diaSrc_f1.png" /></a>
+<p class="caption"><span class="caption-number">Figure 4 </span><span class="caption-text">Full g-band difference image with positive and negative source detections masked in dark/light blue, saturated sources masked in green, and the edges masked in yellow.</span></p>
+</div>
+<div class="figure" id="fig-r-diffim-masked">
+<a class="reference external image-reference" href="https://github.com/lsst-dm/dmtn-019/tree/master/_static/Masked_diaSrc_f2.png"><img alt="_images/Masked_diaSrc_f2.png" src="_images/Masked_diaSrc_f2.png" /></a>
+<p class="caption"><span class="caption-number">Figure 5 </span><span class="caption-text">Full r-band difference image with positive and negative source detections masked in dark/light blue, saturated sources masked in green, and the edges masked in yellow.</span></p>
+</div>
+<div class="figure" id="fig-dipole-severity">
+<a class="reference external image-reference" href="https://github.com/lsst-dm/dmtn-019/tree/master/_static/Dipole_severity_metric_plot.png"><img alt="_images/Dipole_severity_metric_plot.png" src="_images/Dipole_severity_metric_plot.png" /></a>
 </div>
 
 
