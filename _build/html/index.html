@@ -70,7 +70,14 @@
             
             
                 <!-- Local TOC -->
-                <div class="local-toc"><ul class="simple">
+                <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Introduction</a></li>
+<li><a class="reference internal" href="#defining-a-dipole-severity-metric">Defining a Dipole Severity Metric</a><ul>
+<li><a class="reference internal" href="#dipole-severity-metric-plots">Dipole Severity Metric Plots</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#conclusions">Conclusions</a></li>
+<li><a class="reference internal" href="#appendix-additional-diagnostic-images">Appendix: Additional Diagnostic Images</a></li>
 </ul>
 </div>
             
@@ -105,31 +112,108 @@
 </div>
            <div itemprop="articleBody">
             
-  <p>In order to test Differential Chromatic Refraction (DCR) correction algorithms we first need a metric that quantifies the severity of residual dipoles in difference images, in order to evaluate the performance of the correction.
-I used the StarFast simulator (<a class="reference external" href="http://dmtn-012.lsst.io">http://dmtn-012.lsst.io</a>, <a class="reference external" href="https://github.com/lsst-dm/starfast_simulator">https://github.com/lsst-dm/starfast_simulator</a>) to generate multiple realizations of a small field at u, g, and r bands and across a range of airmasses from 1.0 to 2.0.
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>In order to test Differential Chromatic Refraction (DCR) correction algorithms we first need a metric that quantifies the severity of residual dipoles in difference images, in order to evaluate the performance of the correction.
+To begin, I used the StarFast simulator (<a class="reference external" href="http://dmtn-012.lsst.io">http://dmtn-012.lsst.io</a>, <a class="reference external" href="https://github.com/lsst-dm/starfast_simulator">https://github.com/lsst-dm/starfast_simulator</a>) to generate multiple realizations of a couple small fields at u, g, and r bands and across a range of airmasses from 1.0 to 2.0.
+These simulated images contain a realistic distribution of different stellar types, and using several thousand different model SEDs (interpolated Kurucz models, from sims_photUtils).
 I then used ingestSimImages.py and processEimage.py from obs_lsstSim to generate standard calibrated exposures, and ran standard LSST image differencing using imageDifference.py with a calibrated exposure near zenith used as the template (using GetCalexpAsTemplateTask).</p>
+<p>I ran two full simulation runs, each with a different random distribution of stars.
+For the first, &#8220;Faint&#8221;, simulation, I included ~2,500 stars ranging from type M to B with a density of sources roughly equivalent to a typical region of sky at a mid galactic latitude.
+In the &#8220;Bright&#8221; simulation I used the same total number of stars, but excluded type M stars which accounted for 75% of the number of stars in the &#8220;Faint&#8221; simulation.
+As a result, the second simulation contains four times as many bright sources and approximately four times the total flux.
+Each full set of simulations consisted of images of the &#8220;Bright&#8221; or &#8220;Faint&#8221; field in the three bluest LSST filters (u-, g-, and r-band), and at increments of 5 degrees in elevation angle from 30 to 85 degrees.
+Additionally, each image was made with the field either rising or falling, which mirrors the effect of DCR.</p>
+<p>Figures 1 and 2 below show a small sub-region of the &#8220;Faint&#8221; and &#8220;Bright&#8221; difference images for each band at an airmass of 1.3, along with the g-band template image for reference. See <a class="reference internal" href="#section-label-additional"><span class="std std-ref">Appendix: Additional Diagnostic Images</span></a> for images of the full fields.</p>
 <div class="figure" id="fig-dipole-fourpanel">
 <a class="reference external image-reference" href="https://github.com/lsst-dm/dmtn-019/tree/master/_static/Dipoles_ds9_fourpanel_f012.png"><img alt="_images/Dipoles_ds9_fourpanel_f012.png" src="_images/Dipoles_ds9_fourpanel_f012.png" /></a>
-<p class="caption"><span class="caption-number">Figure 1 </span><span class="caption-text">A small region from the simulated images at airmass 1.3 differenced from a template at airmass 1.00. Left to right, top to bottom: u-band, g-band, r-band, and the g-band template image for reference.</span></p>
+<p class="caption"><span class="caption-number">Figure 1 </span><span class="caption-text">A small region from the &#8220;Faint&#8221; simulated images at airmass 1.3 differenced from a template at airmass 1.00. Left to right, top to bottom: u-band, g-band, r-band, and the g-band template image for reference.</span></p>
 </div>
-<div class="figure" id="fig-ugr-image">
-<a class="reference external image-reference" href="https://github.com/lsst-dm/dmtn-019/tree/master/_static/ref_ugr_image.png"><img alt="_images/ref_ugr_image.png" src="_images/ref_ugr_image.png" /></a>
-<p class="caption"><span class="caption-number">Figure 2 </span><span class="caption-text">False color image of the template images, with u-band = blue, g-band = green, and r-band = red</span></p>
+<div class="figure" id="fig-dipole-fourpanel8">
+<a class="reference external image-reference" href="https://github.com/lsst-dm/dmtn-019/tree/master/_static/Dipoles_ds9_fourpanel_f012_test8.png"><img alt="_images/Dipoles_ds9_fourpanel_f012_test8.png" src="_images/Dipoles_ds9_fourpanel_f012_test8.png" /></a>
+<p class="caption"><span class="caption-number">Figure 2 </span><span class="caption-text">As Figure 1, but for the &#8220;Bright&#8221; simulated images which contain four times as many bright stars.</span></p>
+</div>
+<p>At first glance, it is apparent that dipoles are more prevalent in the g-band difference image of both simulations, which is due to three factors:</p>
+<ol class="arabic simple">
+<li>The g-band filter is twice as wide in wavelength as u-band, balancing the larger change in index of refraction at u-band (see Figure 1 of <a class="reference external" href="https://github.com/isullivan/LSST-DCR/blob/master/DCR%20literature%20overview.pdf">https://github.com/isullivan/LSST-DCR/blob/master/DCR%20literature%20overview.pdf</a>)</li>
+<li>Most stars of type A or cooler have a uniformly rising spectrum in u-band, which results in a similarly dispersed psf (see the dipole images of individual stars at the bottom of <a class="reference external" href="https://github.com/lsst-dm/starfast_simulator/blob/master/StarFast_example.ipynb">https://github.com/lsst-dm/starfast_simulator/blob/master/StarFast_example.ipynb</a>). In g-band, by contrast, a typical type A star will have a falling spectrum, a type K star will have a rising spectrum, and in between stars will have a spectrum that is on average flat, but full of features. As a result, there is a greater variation in PSF shape due to DCR in g-band than in any other band.</li>
+<li>Related to the above two points, since the SEDs of many stars peak in g-band, and because the bandwidth is wider, most stars are brightest in g-band. With brighter stars, we should expect to see more dipoles above the noise floor.</li>
+</ol>
+</div>
+<div class="section" id="defining-a-dipole-severity-metric">
+<h1>Defining a Dipole Severity Metric<a class="headerlink" href="#defining-a-dipole-severity-metric" title="Permalink to this headline">¶</a></h1>
+<p>In order to leverage the full utility of LSST software, I wanted to use only the source lists generated by source detection and measurement in processEimage.py and the DIA sources generated with imageDifference.py. A metric of dipole severity could be defined a great many different ways from the parameters in the source tables, but after extensive trials and testing the following, though far from perfect, appears to be robust:</p>
+<ul class="simple">
+<li>First, define a reference flux to use as a normalization for the full catalog of sources extracted in standard source detection and measurement.</li>
+<li>Next, calculate the total significance of both positive and negative sources in the difference image, and divide by the uncertainty in their flux.</li>
+<li>Finally, take the logarithm of 1 plus the difference image source significance divided by the square root of the reference flux.
+Dividing by the square root of the reference flux makes the quantity unitless, but the remainder of this step is fairly arbitrary and simply makes the output more easily human readable.</li>
+</ul>
+<p>In code, the above looks like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span class="n">ref_src</span> <span class="o">=</span> <span class="n">butler_ref</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;src&quot;</span><span class="p">,</span> <span class="n">dataId</span><span class="o">=</span><span class="n">_id</span><span class="p">)</span>      <span class="c"># load the source list with a butler</span>
+<span class="n">flux_ref</span> <span class="o">=</span> <span class="n">ref_src</span><span class="p">[</span><span class="n">fluxrefKey</span><span class="p">]</span>                   <span class="c"># Extract a flux measurement, e.g. &quot;base_PsfFlux_flux&quot;</span>
+<span class="n">flux_ref</span> <span class="o">=</span> <span class="n">flux_ref</span><span class="p">[</span><span class="o">~</span><span class="n">ref_src</span><span class="p">[</span><span class="n">flagrefKey</span><span class="p">]]</span>        <span class="c"># Remove flagged sources</span>
+<span class="n">flux_ref</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">flux_ref</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">saturation</span><span class="p">)</span> <span class="c"># Clip flux at saturation threshold (65000 counts)</span>
+<span class="n">flux_ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">flux_ref</span><span class="p">)</span>
+
+<span class="n">dia_src</span> <span class="o">=</span> <span class="n">butler_dia</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;deepDiff_diaSrc&quot;</span><span class="p">,</span> <span class="n">dataId</span><span class="o">=</span><span class="n">_id</span><span class="p">)</span>                                  <span class="c"># load the difference image source list with a butler</span>
+<span class="n">combined_flux</span> <span class="o">=</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dia_src</span><span class="p">[</span><span class="n">posFluxKey</span><span class="p">])</span> <span class="o">+</span> <span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dia_src</span><span class="p">[</span><span class="n">negFluxKey</span><span class="p">]))</span>        <span class="c"># Add the absolute value of positive and negative</span>
+<span class="n">significance</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">combined_flux</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">saturation</span><span class="p">)</span> <span class="o">/</span> <span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dia_src</span><span class="p">[</span><span class="n">sigmaKey</span><span class="p">])</span> <span class="c"># Clip at saturation threshold, and divide by the error in the flux measurement</span>
+<span class="n">significance</span> <span class="o">=</span> <span class="n">significance</span><span class="p">[</span><span class="o">~</span><span class="n">dia_src</span><span class="p">[</span><span class="n">flagKey</span><span class="p">]]</span>                                           <span class="c"># Remove flagged sources</span>
+<span class="n">metric</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span> <span class="o">/</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">flux_ref</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Finally, calculating the above dipole severity metric for the &#8220;Faint&#8221; and &#8220;Bright&#8221; simulations gives the following:</p>
+<div class="section" id="dipole-severity-metric-plots">
+<h2>Dipole Severity Metric Plots<a class="headerlink" href="#dipole-severity-metric-plots" title="Permalink to this headline">¶</a></h2>
+<div class="figure" id="fig-dipole-severity6">
+<a class="reference external image-reference" href="https://github.com/lsst-dm/dmtn-019/tree/master/_static/Dipole_severity_metric_plot_test6.png"><img alt="_images/Dipole_severity_metric_plot_test6.png" src="_images/Dipole_severity_metric_plot_test6.png" /></a>
+<p class="caption"><span class="caption-number">Figure 3 </span><span class="caption-text">Plot of the dipole severity metric for the &#8220;Faint&#8221; simulations.</span></p>
+</div>
+<div class="figure" id="fig-dipole-severity8">
+<a class="reference external image-reference" href="https://github.com/lsst-dm/dmtn-019/tree/master/_static/Dipole_severity_metric_plot_test8.png"><img alt="_images/Dipole_severity_metric_plot_test8.png" src="_images/Dipole_severity_metric_plot_test8.png" /></a>
+<p class="caption"><span class="caption-number">Figure 4 </span><span class="caption-text">Plot of the dipole severity metric for the &#8220;Bright&#8221; simulations.</span></p>
+</div>
+</div>
+</div>
+<div class="section" id="conclusions">
+<h1>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h1>
+<p>The dipole severity metric plotted above shows that g-band is considerably worse affected than either u- or r-band, which matches what we would expect from visual inspection of Figures 1 and 2.
+I don&#8217;t have a good explanation for why u- and r-band have such extreme scatter in the &#8220;Bright&#8221; simulation, except that it appears to be a real effect of the image differencing pipeline.
+In Figure 4 above, the &#8220;Bright&#8221; u-band field shows a pronounced dip at an elevation angle of 45 degrees only on the rising side of zenith.
+As seen in Figure 5 below, there really do appear to be far fewer dipoles when subtracting that particular observation, suggesting that the scatter in the plot of the metric above is capturing actual significant differences in the performance of image differencing.
+A final point worth noting is that the template used for each band was the simulation of the field at 85 degrees elevation angle on the falling side of zenith.
+At 85 degrees elevation angle, the airmass is only 1.0038 and should contain negligible DCR.
+However, there appear to be far fewer dipoles in the difference images for the other falling fields, that is, the observations taken on the same side of zenith.</p>
+<div class="figure" id="fig-diffim-comparison">
+<a class="reference external image-reference" href="https://github.com/lsst-dm/dmtn-019/tree/master/_static/Diffim_comparison_elevation45_f0.png"><img alt="_images/Diffim_comparison_elevation45_f0.png" src="_images/Diffim_comparison_elevation45_f0.png" /></a>
+<p class="caption"><span class="caption-number">Figure 5 </span><span class="caption-text">Comparison of &#8220;Bright&#8221; u-band difference images at elevation angle 45 degrees. The rising field is on the left, and falling on the right, and as captured by the dipole severity metric in Figure 4 there do indeed appear to be far fewer dipoles in the rising field. A visual comparison of the u-band rising image at elevation angle 45 to the rising image at 50 degrees (not shown) shows a similar subtraction quality difference.</span></p>
+</div>
+</div>
+<div class="section" id="appendix-additional-diagnostic-images">
+<span id="section-label-additional"></span><h1>Appendix: Additional Diagnostic Images<a class="headerlink" href="#appendix-additional-diagnostic-images" title="Permalink to this headline">¶</a></h1>
+<p>For the curious, FITS files of the calibrated template images, and airmass 1.3 science and difference images in the git repository for this tech note: <a class="reference external" href="https://github.com/lsst-dm/dmtn-019/tree/master/FITS%20data">https://github.com/lsst-dm/dmtn-019/tree/master/FITS%20data</a></p>
+<p>Below are a few additional images of the full images used in the simulations for this note.</p>
+<div class="figure" id="fig-ugr-image6">
+<a class="reference external image-reference" href="https://github.com/lsst-dm/dmtn-019/tree/master/_static/ref_ugr_image_test6.png"><img alt="_images/ref_ugr_image_test6.png" src="_images/ref_ugr_image_test6.png" /></a>
+<p class="caption"><span class="caption-number">Figure 6 </span><span class="caption-text">False color image of the &#8220;Faint&#8221; template images, with u-band = blue, g-band = green, and r-band = red. The simulated image contains roughly ~2500 stars ranging from many cool type M stars up to a single type B star.</span></p>
 </div>
 <div class="figure" id="fig-u-diffim-masked">
 <a class="reference external image-reference" href="https://github.com/lsst-dm/dmtn-019/tree/master/_static/Masked_diaSrc_f0.png"><img alt="_images/Masked_diaSrc_f0.png" src="_images/Masked_diaSrc_f0.png" /></a>
-<p class="caption"><span class="caption-number">Figure 3 </span><span class="caption-text">Full u-band difference image with positive and negative source detections masked in dark/light blue, saturated sources masked in green, and the edges masked in yellow.</span></p>
+<p class="caption"><span class="caption-number">Figure 7 </span><span class="caption-text">Full u-band &#8220;Faint&#8221; difference image at airmass 1.3 with positive and negative source detections masked in dark/light blue, saturated sources masked in green, and the edges masked in yellow.</span></p>
 </div>
 <div class="figure" id="fig-g-diffim-masked">
 <a class="reference external image-reference" href="https://github.com/lsst-dm/dmtn-019/tree/master/_static/Masked_diaSrc_f1.png"><img alt="_images/Masked_diaSrc_f1.png" src="_images/Masked_diaSrc_f1.png" /></a>
-<p class="caption"><span class="caption-number">Figure 4 </span><span class="caption-text">Full g-band difference image with positive and negative source detections masked in dark/light blue, saturated sources masked in green, and the edges masked in yellow.</span></p>
+<p class="caption"><span class="caption-number">Figure 8 </span><span class="caption-text">Full g-band &#8220;Faint&#8221; difference image at airmass 1.3 with positive and negative source detections masked in dark/light blue, saturated sources masked in green, and the edges masked in yellow.</span></p>
 </div>
 <div class="figure" id="fig-r-diffim-masked">
 <a class="reference external image-reference" href="https://github.com/lsst-dm/dmtn-019/tree/master/_static/Masked_diaSrc_f2.png"><img alt="_images/Masked_diaSrc_f2.png" src="_images/Masked_diaSrc_f2.png" /></a>
-<p class="caption"><span class="caption-number">Figure 5 </span><span class="caption-text">Full r-band difference image with positive and negative source detections masked in dark/light blue, saturated sources masked in green, and the edges masked in yellow.</span></p>
+<p class="caption"><span class="caption-number">Figure 9 </span><span class="caption-text">Full r-band &#8220;Faint&#8221; difference image at airmass 1.3 with positive and negative source detections masked in dark/light blue, saturated sources masked in green, and the edges masked in yellow.</span></p>
 </div>
-<div class="figure" id="fig-dipole-severity">
-<a class="reference external image-reference" href="https://github.com/lsst-dm/dmtn-019/tree/master/_static/Dipole_severity_metric_plot.png"><img alt="_images/Dipole_severity_metric_plot.png" src="_images/Dipole_severity_metric_plot.png" /></a>
+<div class="figure" id="fig-ugr-image8">
+<a class="reference external image-reference" href="https://github.com/lsst-dm/dmtn-019/tree/master/_static/ref_ugr_image_test8.png"><img alt="_images/ref_ugr_image_test8.png" src="_images/ref_ugr_image_test8.png" /></a>
+<p class="caption"><span class="caption-number">Figure 10 </span><span class="caption-text">False color image of the &#8220;Bright&#8221; template images with a denser distribution of stars, with u-band = blue, g-band = green, and r-band = red.</span></p>
+</div>
 </div>
 
 
@@ -143,7 +227,7 @@ I then used ingestSimImages.py and processEimage.py from obs_lsstSim to generate
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, AURA/LSST.
-      Last updated on May 26, 2016.
+      Last updated on Jun 01, 2016.
 
     </p>
   </div>
